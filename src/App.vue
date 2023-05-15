@@ -1,22 +1,50 @@
 <template>
-  <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/login">Login</router-link>
-  </div>
-  <router-view />  
+  <header>
+    <!-- Navbar -->
+    <MDBNavbar expand="lg" light bg="white" container>
+      <MDBNavbarToggler target="#navbarExample01" @click="collapse1 = !collapse1"></MDBNavbarToggler>
+      <MDBCollapse id="#navbarExample01" v-model="collapse1">
+        <MDBNavbarNav class="mb-2 mb-lg-0">
+          <MDBNavbarItem>
+            <router-link to="/">Home</router-link>
+          </MDBNavbarItem>
+          <MDBNavbarItem>&nbsp;</MDBNavbarItem>
+          <MDBNavbarItem>
+            <router-link to="/user">User</router-link>
+          </MDBNavbarItem>
+        </MDBNavbarNav>
+      </MDBCollapse>
+    </MDBNavbar>
+    <div id="nav">
+
+    </div>
+  </header>
+  <router-view />
 </template>
 
 <script>
+import { MDBNavbar, MDBNavbarToggler, MDBNavbarNav, MDBNavbarItem, MDBCollapse } from 'mdb-vue-ui-kit';
+import { ref } from 'vue';
 
 export default {
   name: 'App',
+  components: {
+    MDBNavbar,
+    MDBNavbarToggler,
+    MDBNavbarNav,
+    MDBNavbarItem,
+    MDBCollapse
+  },
+  setup() {
+    const collapse1 = ref(false);
+    return { collapse1 };
+  }
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
