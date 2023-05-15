@@ -32,14 +32,13 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/vue3-recommended",
-      "eslint:recommended"
+      "plugin:vue/vue3-recommended"
     ],
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
     "rules": {
-      "vue/script-setup-uses-vars": "error"
+      "vue/script-indent": ["error", 4, { "baseIndent": 1 }]
     }
   },
   "browserslist": [
