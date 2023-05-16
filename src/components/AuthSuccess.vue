@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-    import { useAuthStore } from '@/stores/auth';
+    import { useAuthStore } from '@/stores/auth.store';
     // import { toRefs } from 'vue';
 
     console.log("setup")

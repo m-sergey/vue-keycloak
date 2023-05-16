@@ -4,13 +4,19 @@
       <h1>Home Page</h1>
     </MDBRow>
     <MDBRow>
-      <textarea v-model="message" />
+      <textarea v-model="message"></textarea>
     </MDBRow>
     <MDBRow>
       <MDBCol>
         <button @click="postMessage()">
           Send
         </button>
+        <button @click="registerSelf()">
+          Register
+        </button>
+        <button @click="list()">
+          List
+        </button>        
       </MDBCol>
     </MDBRow>
   </MDBContainer>
@@ -18,7 +24,8 @@
 
 <script>
     import { MDBContainer, MDBRow, MDBCol } from 'mdb-vue-ui-kit';
-    import { sendMessage } from "../worker-api";
+    import {v4 as uuidv4} from 'uuid';
+    import { toUpperCase, registerTab, listTab } from "../worker-api";
 
     export default {
         components: {
@@ -29,11 +36,23 @@
         data() {
             return {
                 message: "",
+                tabId: uuidv4()
             }
         },
         methods: {
-            postMessage() {
-                sendMessage(this.message);
+            async postMessage() {
+                console.log("postMessage");
+                const result = await toUpperCase(this.message);
+                this.message = result;
+            },
+            async registerSelf() {
+                console.log("register");
+                const result = await registerTab(this.tabId); 
+            },
+            async list() {
+                console.log("list");
+                const result = await listTab();
+                this.message = result;
             }
         }
     }

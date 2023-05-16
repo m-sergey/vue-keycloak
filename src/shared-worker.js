@@ -1,25 +1,31 @@
-// Install 
-self.addEventListener('install', function(event) {
-    console.log("install");
-});
- 
-// Activate 
-self.addEventListener('activate', function(event) {
-    console.log("activet");
-});
- 
+import * as Comlink from 'comlink';
 
+const Worker = {    
+    toUpperCase(msg) {
+        console.log("test");
+        return msg.toUpperCase();
+    },
 
-// Receive message from main file
-self.onmessage = function(e) {
-    console.log("onmessage: ", e.data);
-   
-    const { type } = JSON.parse(e.data);
+    registerTab(tabId) {
+        if(!this.tabs) {
+            this.tabs = new Array();
+        }
 
-    const workerResult = { "type": type };
+        this.tabs.push(tabId);
+    },
 
-    console.log("messagee type: ", type);
+    listTab() {
+        if(!this.tabs) {
+            return "<empty>";
+        }
 
-    // Send message to main file
-    self.postMessage(workerResult);
-}
+        return this.tabs.join(",");
+    }
+};
+
+self.onconnect = function (event) {
+    const port = event.ports[0];
+    console.log("port");
+    Comlink.expose(Worker, port);
+};
+

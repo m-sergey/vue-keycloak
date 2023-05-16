@@ -1,7 +1,11 @@
-import Worker from "worker-loader!./shared-worker.js";
+import * as Comlink from 'comlink';
 
-const worker = new Worker();
+// const sharedWorker = new SharedWorker("@/comlinkWorker/multiplierSharedWorker.js");
 
-export function sendMessage(msg) {
-    worker.postMessage(msg); 
-};
+const sharedWorker = new SharedWorker(new URL('./shared-worker', import.meta.url)); 
+console.log("sharedWorker", sharedWorker);
+const worker = Comlink.wrap(sharedWorker.port);
+
+export const toUpperCase = worker.toUpperCase
+export const registerTab = worker.registerTab;
+export const listTab = worker.listTab;

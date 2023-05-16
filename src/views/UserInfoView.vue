@@ -47,7 +47,7 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
 </template>
 
 <script setup>
-    import { useAuthStore } from '@/stores/auth'
+    import { useAuthStore } from '@/stores/auth.store';
     import { toRefs } from 'vue';
 
     const store = useAuthStore();
