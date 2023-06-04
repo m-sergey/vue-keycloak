@@ -1,12 +1,8 @@
-<!--
-http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=undefined&response_type=code&code_challenge_method=S256&code_challenge=-sUEoAV-txYvhniiuJ4-gwNCtsiD2XiIPvLQYm-sUsE&redirect_uri=http%3A%2F%2Flocalhost%3A8081%2Fauthsuccess
--->
-
 <template>
   <h1>User Info</h1>
   <MDBContainer>
     <MDBRow v-if="!isAuth">
-      <a :href="keycloakURL + '/realms/Clients/protocol/openid-connect/auth?client_id=' + clientId + '&response_type=code&code_challenge_method=S256&code_challenge=' + codeChallenge + '&redirect_uri=' + encodeURIComponent(redirectURI)">Login</a>    
+      <a :href="keycloakRedirectURL">Login</a>    
     </MDBRow>
     <MDBRow v-else>
       <MDBCol class="align-self-center">
@@ -65,12 +61,6 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
               <td>{{ authCode }}</td>
             </tr>
             <tr>
-              <td class="text-nowra">
-                Code verifer
-              </td>
-              <td> {{ codeVerifier }}</td>
-            </tr>
-            <tr>
               <td class="text-nowrap">
                 Access Token
               </td>
@@ -98,7 +88,6 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
     import { toRefs } from 'vue';
 
     const store = useAuthStore();
-    store.fillCodeChallenge();
     const { isAuth, keycloakURL, clientId, redirectURI, codeVerifier, codeChallenge, keycloakRedirectURL, accessToken, refreshToken, authCode, authError } = toRefs(store);    
 </script>
 

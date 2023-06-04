@@ -14,14 +14,13 @@
     console.log(route.query);
 
     const store = useAuthStore();
-    store.fillCodeChallenge();
     const { isAuth, keycloakURL, clientId, redirectURI, codeVerifier, codeChallenge, keycloakRedirectURL, accessToken, refreshToken, authCode, authError } = toRefs(store);
     console.log("route.query.error", route.query.error);
     store.setError(route.query.error);
     if (!route.query.error) {
         store.login(route.query.code);
     } else {
-        console.log("error", this.error);
+        console.log("error", store.authError);
     }
     router.push("/user");
 </script>
