@@ -4,19 +4,36 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
 
 <template>
   <h1>User Info</h1>
-  <div v-if="!isAuth">
-    <a :href="keycloakURL + '/realms/Clients/protocol/openid-connect/auth?client_id=' + clientId + '&response_type=code&code_challenge_method=S256&code_challenge=' + codeChallenge + '&redirect_uri=' + encodeURIComponent(redirectURI)">Login</a>
-  </div>
-  <div v-else>
-    <a :href="keycloakURL + '/realms/Clients/protocol/openid-connect/auth?client_id=' + clientId + '&response_type=code&code_challenge_method=S256&code_challenge=' + codeChallenge + '&redirect_uri=' + encodeURIComponent(redirectURI)">Logut</a>
-  </div>
   <MDBContainer>
+    <MDBRow v-if="!isAuth">
+      <a :href="keycloakURL + '/realms/Clients/protocol/openid-connect/auth?client_id=' + clientId + '&response_type=code&code_challenge_method=S256&code_challenge=' + codeChallenge + '&redirect_uri=' + encodeURIComponent(redirectURI)">Login</a>    
+    </MDBRow>
+    <MDBRow v-else>
+      <MDBCol class="align-self-center">
+        <MDBBtn
+          color="info"
+          rounded
+          @click="store.updateTokens()"
+        >
+          Refresh
+        </MDBBtn>
+        <MDBBtn
+          color="danger"
+          rounded
+          @click="store.logout()"
+        >
+          Logout
+        </MDBBtn>
+      </MDBCol>
+    </MDBRow>
     <MDBRow>
       <MDBCol class="align-self-center">
         <MDBTable>
           <thead>
-            <td>Param</td>
-            <td>Value</td>
+            <tr>
+              <td>Param</td>
+              <td>Value</td>
+            </tr>
           </thead>
           <tbody>
             <tr>
@@ -39,6 +56,36 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
               <td>Code challenge</td>
               <td>{{ codeChallenge }}</td>
             </tr>
+            <tr>
+              <td>Error</td>
+              <td>{{ authError }}</td>
+            </tr>
+            <tr>
+              <td>Auth code</td>
+              <td>{{ authCode }}</td>
+            </tr>
+            <tr>
+              <td class="text-nowra">
+                Code verifer
+              </td>
+              <td> {{ codeVerifier }}</td>
+            </tr>
+            <tr>
+              <td class="text-nowrap">
+                Access Token
+              </td>
+              <td class="text-break">
+                {{ accessToken }}
+              </td>
+            </tr>
+            <tr>
+              <td class="text-nowrap">
+                Refresh Token
+              </td>
+              <td class="text-break">
+                {{ refreshToken }}
+              </td>
+            </tr>
           </tbody>
         </MDBTable>
       </MDBCol>
@@ -51,48 +98,12 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
     import { toRefs } from 'vue';
 
     const store = useAuthStore();
-    const { isAuth, keycloakURL, clientId, redirectURI } = toRefs(store)
+    store.fillCodeChallenge();
+    const { isAuth, keycloakURL, clientId, redirectURI, codeVerifier, codeChallenge, keycloakRedirectURL, accessToken, refreshToken, authCode, authError } = toRefs(store);    
 </script>
 
 <script>
-    import { MDBTable, MDBContainer, MDBRow, MDBCol, } from 'mdb-vue-ui-kit';
-    import { useSessionStorage } from "@vueuse/core"
-
-
-    function generateCodeVerifier() {
-        return Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15) +
-            Math.random().toString(36).substring(2, 15);
-    }
-
-    function sha256(plain) { // returns promise ArrayBuffer
-        const encoder = new TextEncoder();
-        const data = encoder.encode(plain);
-        return window.crypto.subtle.digest('SHA-256', data);
-    }
-
-    function base64urlencode(a) {
-        var str = "";
-        var bytes = new Uint8Array(a);
-        var len = bytes.byteLength;
-        for (var i = 0; i < len; i++) {
-            str += String.fromCharCode(bytes[i]);
-        }
-        return btoa(str)
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, "");
-    }
-
-    async function challenge_from_verifier(v) {
-        var hashed = await sha256(v);
-        var base64encoded = base64urlencode(hashed);
-        return base64encoded;
-    }
+    import { MDBTable, MDBContainer, MDBRow, MDBCol, MDBBtn, } from 'mdb-vue-ui-kit';
 
     export default {
         components: {
@@ -100,28 +111,11 @@ http://192.168.88.20:8080/realms/Clients/protocol/openid-connect/auth?client_id=
             MDBContainer,
             MDBRow,
             MDBCol,
+            MDBBtn,
         },
         data() {
             return {
-                // keycloakURL: 'http://192.168.88.20:8080',
-                cleintId: "webapp",
-                redirectURI: "http://localhost:8080/authsuccess",
-                codeVerifier: useSessionStorage("codeVerifier", generateCodeVerifier()),
-                codeChallenge: "",
             }
-        },
-        computed: {
-            keycloakRedirectURL() {
-                return this.keycloakURL +
-                    '/realms/Clients/protocol/openid-connect/auth?response_type=code&code_challenge_method=S256' +
-                    '&client_id=' + this.cleintId +
-                    '&code_challenge=' + this.codeChallenge +
-                    '&redirect_uri=' + encodeURIComponent(this.redirectURI);
-            },
-        },
-        created() {
-            console.log(this.codeVerifier);
-            challenge_from_verifier(this.codeVerifier).then(value => this.codeChallenge = value);
         },
     }
 </script>
